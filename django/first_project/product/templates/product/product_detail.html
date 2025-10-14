@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Slideshow ảnh sản phẩm -->
+    <div class="col-md-6">
+      <div id="productCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <!-- Ảnh chính -->
+          <div class="carousel-item active">
+            <div class="image-wrapper">
+              <img src="{{ product.image }}" class="product-img" alt="{{ product.name }}">
+            </div>
+          </div>
+
+          <!-- Các ảnh phụ -->
+          {% for image in product.images.all %}
+          <div class="carousel-item">
+            <div class="image-wrapper">
+              <img src="{{ image.image_url }}" class="product-img" alt="Ảnh của {{ product.name }}">
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Nút điều hướng -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Thông tin sản phẩm -->
+    <div class="col-md-6">
+      <h2 class="fw-bold mb-3">{{ product.name }}</h2>
+      <p class="product-price">{{ product.price|floatformat:0|intcomma }} VND</p> <p>
+      <p class="mb-1">
+        <strong>Tình trạng:</strong>
+        {% if product.status == 'available' %}
+          <span style="color: green;">Còn hàng</span>
+        {% else %}
+          <span style="color: red;">Hết hàng</span>
+        {% endif %}
+      </p>
+
+      <hr>
+
+      <!-- Form chọn số lượng và thêm vào giỏ -->
+      <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-3">
+        {% csrf_token %}
+        <div class="d-flex align-items-center mb-3">
+          <label for="quantity" class="me-2 fw-bold">Số lượng:</label>
+          <div class="input-group" style="width: 140px;">
+            <button type="button" class="btn btn-outline-secondary" id="decrease">-</button>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" class="form-control text-center">
+            <button type="button" class="btn btn-outline-secondary" id="increase">+</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success me-2">
+          <i class="bi bi-cart-plus-fill"></i> Thêm vào giỏ
+        </button>
+        {% with product.category.all|first as cat %}
+          {% if cat %}
+            <a href="{% url 'category_detail' cat.id %}" class="btn btn-secondary">
+                <i class="bi bi-bookmark-heart-fill text-danger fs-5"></i> Quay lại</a>
+          {% endif %}
+        {% endwith %}
+      </form>
+      <hr>
+    </div>
+
+
+    <!-- THÔNG TIN SẢN PHẨM -->
+    <div class="product-info-section mt-5">
+      <h4 class="info-title">THÔNG TIN SẢN PHẨM</h4>
+      <div class="product-info-content">
+        <p class="mt-3">{{ product.description }}</p>
+        <p class="thank-text">Cảm ơn bạn đã tin tưởng ủng hộ!!! 🌷</p>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- Script tăng/giảm số lượng -->
+<script>
+  document.getElementById("increase").addEventListener("click", function() {
+    var quantityInput = document.getElementById("quantity");
+    quantityInput.value = parseInt(quantityInput.value) + 1;
+  });
+
+  document.getElementById("decrease").addEventListener("click", function() {
+    var quantityInput = document.getElementById("quantity");
+    if (parseInt(quantityInput.value) > 1) {
+      quantityInput.value = parseInt(quantityInput.value) - 1;
+    }
+  });
+</script>
+{% endblock %}
