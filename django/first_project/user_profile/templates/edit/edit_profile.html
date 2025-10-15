@@ -1,14 +1,20 @@
 {% extends 'base.html' %}
-<head>
-    <title>{% block title%} Chỉnh Sửa Tài Khoản {% endblock %}</title>
-</head>
+
+{% block title %}Chỉnh sửa thông tin{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-    <h2>Chỉnh sửa thông tin</h2>
+    <h2>Chỉnh sửa thông tin cá nhân</h2>
+
     <form method="post">
         {% csrf_token %}
-        {{user_form.as_p}}
+
+        <h4>Thông tin tài khoản</h4>
+        {{ user_form.as_p }}
+
+        <h4>Thông tin liên hệ</h4>
         {{ form.as_p }}
+
         <button type="submit" class="btn btn-success">Lưu thay đổi</button>
         <a href="{% url 'user_profile:profile_view' %}" class="btn btn-secondary">Hủy</a>
     </form>

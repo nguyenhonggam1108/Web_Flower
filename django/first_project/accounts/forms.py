@@ -11,7 +11,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = Customer
-        fields = ['email','phone']
+        fields = ['phone']
 
 class LoginForm(forms.Form):
     email = forms.CharField(label='Email')

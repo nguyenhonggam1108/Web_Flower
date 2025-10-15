@@ -68,8 +68,7 @@
         </button>
         {% with product.category.all|first as cat %}
           {% if cat %}
-            <a href="{% url 'category_detail' cat.id %}" class="btn btn-secondary">
-                <i class="bi bi-bookmark-heart-fill text-danger fs-5"></i> Quay lại</a>
+            <a href="{% url 'category_detail' cat.id %}" class="btn btn-secondary">Quay lại</a>
           {% endif %}
         {% endwith %}
       </form>

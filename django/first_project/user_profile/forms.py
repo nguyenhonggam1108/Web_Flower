@@ -1,18 +1,24 @@
 
 from django import forms
 from accounts.models import Customer
-
-from first_app.models import User
+from django.contrib.auth.models import User
 
 
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['phone', 'address']
-        widgets = {
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'address': forms.TextInput(attrs={'class': 'form-control'}),
-        }
+
+
+
+# Form cho model User (họ, tên, email)
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+
+# Form cho model Customer (số điện thoại, địa chỉ)
+
 #
 # class UserForm(forms.ModelForm):
 #     class Meta:
