@@ -29,8 +29,6 @@ class SaleView(TemplateView):
 class DesignView(TemplateView):
     template_name = "design.html"
 
-class ThemedView(TemplateView):
-    template_name = "themed.html"
 
 
 # ----DropDown----
@@ -51,16 +49,14 @@ class BoHoaTuoiView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            category = Category.objects.get(name__iexact="bo_hoa_tuoi")
-            products = Product.objects.filter(category=category)
+            category = Category.objects.get(name__iexact="Bó hoa tươi")
+            products = category.products.all()  # ✅ chính xác cho ManyToMany
         except Category.DoesNotExist:
             category = {'name': 'Bó Hoa Tươi'}
             products = []
-        context['products'] = products
         context['category'] = category
+        context['products'] = products
         return context
-
-
 
 
 class ChauHoaView(TemplateView):
@@ -69,107 +65,114 @@ class ChauHoaView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            category = Category.objects.get(name__iexact="Chau Hoa")
-            products = Product.objects.filter(category=category)
+            category = Category.objects.get(name__iexact="Chậu hoa")
+            products = category.products.all()
         except Category.DoesNotExist:
             category = {'name': 'Chậu Hoa'}
             products = []
-        context['products'] = products
         context['category'] = category
+        context['products'] = products
         return context
 
 
 
+# --- Hoa sáp ---
 class HoaSapView(TemplateView):
     template_name = "dropdown/hoa_sap.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            category = Category.objects.get(name__iexact="Hoa Sáp")
-            products = Product.objects.filter(category=category)
+            category = Category.objects.get(name__iexact="Hoa sáp")
+            products = category.products.all()
         except Category.DoesNotExist:
             category = {'name': 'Hoa Sáp'}
             products = []
-        context['products'] = products
         context['category'] = category
+        context['products'] = products
         return context
 
 
-# ----DropDown_Themed----
+# --- Hoa chia buồn ---
 class HoaChiaBuonView(TemplateView):
     template_name = "dropdown/themed_flower/hoa_chia_buon.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            category = Category.objects.get(name__iexact="Hoa Chia Buồn")
-            products = Product.objects.filter(category=category)
+            category = Category.objects.get(name__iexact="Hoa chia buồn")
+            products = category.products.all()
         except Category.DoesNotExist:
             category = {'name': 'Hoa Chia Buồn'}
             products = []
-        context['products'] = products
         context['category'] = category
+        context['products'] = products
         return context
 
 
+# --- Hoa chúc mừng ---
 class HoaChucMungView(TemplateView):
     template_name = "dropdown/themed_flower/hoa_chuc_mung.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            category = Category.objects.get(name__iexact="Hoa Chúc Mừng ")
-            products = Product.objects.filter(category=category)
+            category = Category.objects.get(name__iexact="Hoa chúc mừng")
+            products = category.products.all()
         except Category.DoesNotExist:
             category = {'name': 'Hoa Chúc Mừng'}
             products = []
-        context['products'] = products
         context['category'] = category
+        context['products'] = products
         return context
 
+
+# --- Hoa cưới ---
 class HoaCuoiView(TemplateView):
     template_name = "dropdown/themed_flower/hoa_cuoi.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            category = Category.objects.get(name__iexact="Hoa Cưới ")
-            products = Product.objects.filter(category=category)
+            category = Category.objects.get(name__iexact="Hoa cưới")
+            products = category.products.all()
         except Category.DoesNotExist:
             category = {'name': 'Hoa Cưới'}
             products = []
-        context['products'] = products
         context['category'] = category
+        context['products'] = products
         return context
 
+
+# --- Hoa sinh nhật ---
 class HoaSinhNhatView(TemplateView):
     template_name = "dropdown/themed_flower/hoa_sinh_nhat.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            category = Category.objects.get(name__iexact="Hoa Sinh Nhật ")
-            products = Product.objects.filter(category=category)
+            category = Category.objects.get(name__iexact="Hoa sinh nhật")
+            products = category.products.all()
         except Category.DoesNotExist:
             category = {'name': 'Hoa Sinh Nhật'}
             products = []
-        context['products'] = products
         context['category'] = category
+        context['products'] = products
         return context
 
+
+# --- Hoa tình yêu ---
 class HoaTinhYeuView(TemplateView):
     template_name = "dropdown/themed_flower/hoa_tinh_yeu.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            category = Category.objects.get(name__iexact="Hoa Tình Yêu ")
-            products = Product.objects.filter(category=category)
+            category = Category.objects.get(name__iexact="Hoa tình yêu")
+            products = category.products.all()
         except Category.DoesNotExist:
             category = {'name': 'Hoa Tình Yêu'}
             products = []
-        context['products'] = products
         context['category'] = category
+        context['products'] = products
         return context
-

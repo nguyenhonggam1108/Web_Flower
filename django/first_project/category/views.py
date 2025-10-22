@@ -9,7 +9,6 @@ from product.models import Product
 # Create your views here.
 class CategoryDetailView(TemplateView):
     template_name = 'category/category_detail.html'
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         cat_id = self.kwargs.get('cat_id')
@@ -17,6 +16,7 @@ class CategoryDetailView(TemplateView):
         products = Product.objects.filter(category=category)
         context['category'] = category
         context['products'] = products
+        context['categories'] = Category.objects.all()
         return context
 
 

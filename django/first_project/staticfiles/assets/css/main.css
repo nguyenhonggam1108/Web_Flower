@@ -144,7 +144,7 @@ h6 {
 --------------------------------------------------------------*/
 .header {
   color: var(--default-color);
-  background-color: #8fc98d !important;
+  background-color: #8fc98d  !important;
   padding: 15px 0;
   transition: all 0.5s;
   z-index: 997;
@@ -489,7 +489,7 @@ h6 {
 --------------------------------------------------------------*/
 .footer {
   color: var(--default-color);
-  background-color: var(--background-color);
+  background-color: #8fc98d !important;
   font-size: 14px;
   padding: 40px 0;
   position: relative;
@@ -855,7 +855,7 @@ body.index-page .category-card p {
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  color: black;
+  color: white;
   font-weight: bold;
   font-size: 1rem;
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
@@ -953,6 +953,14 @@ body.index-page .category-card p {
 /* Làm hiệu ứng chuyển ảnh mượt */
 .carousel-item img {
   transition: transform 2s ease-in-out;
+}
+
+===Hoa Sáp =====
+.card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 /*--------------------------------------------------------------

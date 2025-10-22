@@ -11,20 +11,3 @@ class ProductDetailView(DetailView):
     pk_url_kwarg = 'product_id'
 
 
-class AddToCartView(View):
-    def post(self, request, product_id):
-        product = get_object_or_404(Product, id=product_id)
-        quantity = int(request.POST.get('quantity', 1))
-
-        cart = request.session.get('cart', {})
-        if str(product_id) in cart:
-            cart[str(product_id)]['quantity'] += quantity
-        else:
-            cart[str(product_id)] = {
-                'name': product.name,
-                'price': product.price,
-                'quantity': quantity,
-            }
-
-        request.session['cart'] = cart
-        return redirect('cart')

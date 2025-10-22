@@ -25,19 +25,23 @@
         </section><!-- /Hero Section -->
 
         <div class="container my-5">
-            <h3 class="text-center fw-bold mb-4">DANH MỤC NỔI BẬT</h3>
-                <div class="row text-center">
-                    {% for cat in category %}
-                    <div class="col-6 col-md-4 col-lg-2 mb-4">
-                        <a href="{% url 'category_detail' cat.id %}" class="category-card">
-                            <div class="category-img-wrapper">
-                                <img src="{{ cat.image }}" alt="{{ cat.name }}">
-                                <div class="category-name">{{ cat.name }}</div>
-                            </div>
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
+          <h3 class="text-center fw-bold mb-4">DANH MỤC NỔI BẬT</h3>
+          <div class="row text-center">
+            {% for cat in category %}
+              <div class="col-6 col-md-4 col-lg-2 mb-4">
+                <a href="{% url 'category_detail' cat.id %}" class="category-card">
+                  <div class="category-img-wrapper">
+                    {% if cat.image %}
+                      <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+                    {% else %}
+                      <img src="{% static 'images/no-image.png' %}" alt="Không có ảnh">
+                    {% endif %}
+                    <div class="category-name">{{ cat.name }}</div>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          </div>
         </div>
     </main>
 {% endblock %}

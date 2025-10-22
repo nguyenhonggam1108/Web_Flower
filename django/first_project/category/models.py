@@ -5,7 +5,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    image = models.TextField()
+    image = models.ImageField(upload_to='category_images/', null=True, blank=True)
     is_featured = models.BooleanField(default=False)
 
     def __str__(self):
