@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+<title>{% block title %}Đăng ký tài khoản{% endblock %}</title>
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/account.css' %}">
+<!--Thông báo -->
+
+<div class="register-container">
+        <h2>ĐĂNG KÝ</h2>
+        <p>Đã có tài khoản? <a href="{% url 'accounts:login' %}">Đăng nhập tại đây</a></p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="first_name" placeholder="Họ" required>
+            <input type="text" name="last_name" placeholder="Tên" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="phone" placeholder="Số điện thoại">
+            <input type="text" name="address" placeholder="Địa chỉ">
+            <input type="password" name="password" placeholder="Mật khẩu" required>
+            <button type="submit">Đăng ký</button>
+        </form>
+
+        <div class="social-login">
+            <p>Hoặc đăng nhập bằng</p>
+            <div class="social-login-buttons">
+                <button class="facebook">Facebook</button>
+                <button class="google">Google</button>
+            </div>
+        </div>
+    </div>
+{% endblock%}
+
