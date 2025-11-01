@@ -144,7 +144,7 @@ h6 {
 --------------------------------------------------------------*/
 .header {
   color: var(--default-color);
-  background-color: #8fc98d  !important;
+  background-color: #B7D3CA !important;
   padding: 15px 0;
   transition: all 0.5s;
   z-index: 997;
@@ -489,7 +489,7 @@ h6 {
 --------------------------------------------------------------*/
 .footer {
   color: var(--default-color);
-  background-color: #8fc98d !important;
+  background-color: #B7D3CA !important;
   font-size: 14px;
   padding: 40px 0;
   position: relative;
@@ -586,6 +586,9 @@ h6 {
 }
 
 .hero .btn-get-started {
+  position: absolute;
+  bottom: -200px;      /* cách đáy 20px */
+  right: -10px;       /* cách phải 30px */
   color: var(--contrast-color);
   background: var(--accent-color);
   font-family: var(--heading-font);
@@ -593,11 +596,11 @@ h6 {
   font-weight: 600;
   font-size: 12px;
   letter-spacing: 1px;
-  display: inline-block;
   padding: 12px 40px;
   border-radius: 50px;
   transition: 0.5s;
-  margin-top: 30px;
+
+
 }
 
 .hero .btn-get-started:hover {
@@ -865,7 +868,7 @@ body.index-page .category-card p {
 
 /* Khi hover đổi màu chữ thành xanh */
 .category-card:hover .category-name {
-  color: #006633; /* xanh lá cây tươi */
+  color: #34b7a7; /* xanh lá cây tươi */
 }
 
 /*--------product*/
@@ -905,12 +908,12 @@ body.index-page .category-card p {
 }
 
 .btn-outline-success {
-  border: 2px solid #74c69d;
-  color: #74c69d;
+  border: 2px solid #B7D3CA;
+  color: #B7D3CA;
 }
 
 .btn-outline-success:hover {
-  background-color: #74c69d;
+  background-color: #B7D3CA;
   color: white;
 }
 
@@ -961,6 +964,33 @@ body.index-page .category-card p {
   height: 250px;
   object-fit: cover;
   border-radius: 10px;
+}
+
+.category-scroll {
+  scroll-behavior: smooth;
+  gap: 10px;
+}
+
+.arrow-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #2ec4b6;
+  color: white;
+  border: none;
+  font-size: 24px;
+  padding: 8px 12px;
+  border-radius: 50%;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.arrow-btn.left {
+  left: -10px;
+}
+
+.arrow-btn.right {
+  right: -10px;
 }
 
 /*--------------------------------------------------------------

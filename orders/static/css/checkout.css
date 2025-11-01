@@ -1,0 +1,65 @@
+body {
+  background-color: #f0fdf9;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.mint-title {
+  color: #2ec4b6;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.mint-border {
+  border: 2px solid #2ec4b6;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+.mint-btn {
+  background-color: #2ec4b6;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+}
+
+.mint-btn:hover {
+  background-color: #28b3a6;
+}
+
+.form-control:focus {
+  border-color: #2ec4b6;
+  box-shadow: 0 0 0 0.2rem rgba(46, 196, 182, 0.25);
+}
+.mint-btn-alt {
+  background-color: #ffffff;
+  color: #3d9970;
+  border: 2px solid #3d9970;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: 0.3s;
+}
+.mint-btn-alt:hover {
+  background-color: #3d9970;
+  color: white;
+}
+
+.coupon-track::-webkit-scrollbar {
+  height: 6px;
+}
+.coupon-track::-webkit-scrollbar-thumb {
+  background-color: #9cd6c4;
+  border-radius: 10px;
+}
+.coupon-card {
+  background-color: #f8fffa;
+  transition: all 0.2s ease;
+}
+.coupon-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

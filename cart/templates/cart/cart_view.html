@@ -1,50 +1,81 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Giỏ hàng{% endblock %}
+
 {% block content %}
 <link rel="stylesheet" href="{% static 'cart.css' %}">
+<div class="cart-container my-5">
+  <h2 class="text-center mb-4">Giỏ hàng của bạn</h2>
+  {% if cart_items %}
+  <table class="table table-bordered text-center align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Thông Tin Sản Phẩm</th>
+        <th>Giá</th>
+        <th>Số lượng</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart_items %}
+      <tr>
+        <td>
+            <div class="d-flex align-items-center">
+              {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="70" height="70" class="me-4 rounded">
+          {% else %}
+            <img src="{% static 'images/no-image.png' %}" width="70" height="70" class="rounded">
+          {% endif %}
+              <div>
+                  <h6 class="mb-0">
+                    <a href="{% url 'product_detail' item.product.id %}" class="product-link">
+                      {{ item.product.name }}
+                    </a>
+                  </h6>
+              </div>
+            </div>
+        </td>
+        <td>{{ item.product.price|floatformat:0|intcomma }} VND</td>
+        <td>
+            {% if user.is_authenticated %}
+            <form action="{% url 'cart:update_cart' item.id %}" method="POST" class="d-flex justify-content-center align-items-center">
+            {% else %}
+              <form action="{% url 'cart:update_cart' item.product.id %}" method="POST" class="d-flex justify-content-center align-items-center">
+            {% endif %}
+                {% csrf_token %}
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                       class="form-control form-control-sm w-50 text-center me-2">
+                <button type="submit" class="me-3 btn btn-outline-primary btn-sm">Cập nhật</button>
+            </form>
+        </td>
+        <td>
+            {% if user.is_authenticated %}
+              <form action="{% url 'cart:remove_from_cart' item.id %}" method="POST">
+            {% else %}
+              <form action="{% url 'cart:remove_from_cart' item.product.id %}" method="POST">
+            {% endif %}
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+              </form>
+         </td>
 
-<div class="cart-container">
-  <h2>🛒 Giỏ hàng của bạn</h2>
-
-  {% if cart %}
-  <table class="cart-table">
-    <tr>
-      <th>Tên sản phẩm</th>
-      <th>Giá</th>
-      <th>Số lượng</th>
-      <th>Tổng</th>
-      <th>Hành động</th>
-    </tr>
-    {% for id, item in cart.items %}
-    <tr>
-      <td>{{ item.name }}</td>
-      <td>{{ item.price }}₫</td>
-      <td>
-        <form method="post" action="{% url 'cart:update_cart' id %}">
-          {% csrf_token %}
-          <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
-          <button type="submit" class="btn-update">Cập nhật</button>
-        </form>
-      </td>
-      <td>{{ item.price|floatformat:0 }} x {{ item.quantity }} = {{ item.price|floatformat:0|add:item.quantity }}</td>
-      <td>
-        <form method="post" action="{% url 'cart:remove_from_cart' id %}">
-          {% csrf_token %}
-          <button type="submit" class="btn-remove">Xóa</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
   </table>
 
-  <h3 class="total">Tổng cộng: {{ total|floatformat:0 }}₫</h3>
-  <a href="#" class="checkout-btn">Thanh toán</a>
+  <div class="text-end mt-3">
+    <h4>Tổng cộng: <span class="text-success fw-bold">{{ total|floatformat:0|intcomma }} VND</span></h4>
+    <a href="{% url 'orders:checkout' %}" class="btn btn-success mt-2">Thanh toán</a>
+  </div>
 
   {% else %}
-  <p>Giỏ hàng của bạn đang trống.</p>
+  <div class="text-center my-5">
+    <p class="text-muted fs-5">Giỏ hàng của bạn đang trống 😢</p>
+    <a href="{% url 'index' %}" class="btn btn-outline-success">Tiếp tục mua hàng</a>
+  </div>
   {% endif %}
 </div>
-
 {% endblock %}

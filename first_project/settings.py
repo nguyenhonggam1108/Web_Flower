@@ -16,8 +16,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = os.path.join(BASE_DIR,'first_project', 'templates')
 STATIC_URL = '/static/'
-STATIC_DIR = os.path.join(BASE_DIR, 'first_project', 'static')
-STATICFILES_DIRS = [ BASE_DIR / "first_project" / "static" ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'first_project', 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -26,9 +30,6 @@ SECRET_KEY = "django-insecure-8kqn_3is9z5*oh$fnj3s^#(@@qc$@-k+h!01#=k)*s$v4eajxt
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -45,6 +46,9 @@ INSTALLED_APPS = [
     "category",
     "product",
     "user_profile",
+    "wishlist",
+    "cart",
+    "orders",
 ]
 
 MIDDLEWARE = [
@@ -69,6 +73,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'cart.context_processors.cart_total_quantity',
+
             ],
         },
     },
@@ -122,11 +128,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [STATIC_DIR,]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Static files (CSS, JavaScript, Images)
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+

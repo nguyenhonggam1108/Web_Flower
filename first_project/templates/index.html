@@ -14,7 +14,7 @@
     <main class="main">
     <!-- Hero Section -->
         <section id="hero" class="hero section">
-          <img src="{% static 'assets/img/logo_home.png' %}" alt="" data-aos="fade-in">
+          <img src="{% static 'assets/img/logo_home3.png' %}" alt="" data-aos="fade-in">
           <div class="container text-center" data-aos="zoom-out" data-aos-delay="100">
             <div class="row justify-content-center">
               <div class="col-lg-8">
@@ -23,22 +23,44 @@
             </div>
           </div>
         </section><!-- /Hero Section -->
-
         <div class="container my-5">
-            <h3 class="text-center fw-bold mb-4">DANH MỤC NỔI BẬT</h3>
-                <div class="row text-center">
-                    {% for cat in category %}
-                    <div class="col-6 col-md-4 col-lg-2 mb-4">
-                        <a href="{% url 'category_detail' cat.id %}" class="category-card">
-                            <div class="category-img-wrapper">
-                                <img src="{{ cat.image }}" alt="{{ cat.name }}">
-                                <div class="category-name">{{ cat.name }}</div>
-                            </div>
-                        </a>
+          <h3 class="text-center fw-bold mb-4">DANH MỤC NỔI BẬT</h3>
+
+          <div class="position-relative">
+<!--            &lt;!&ndash; Mũi tên trái &ndash;&gt;-->
+<!--            <button class="arrow-btn left" onclick="scrollLeft()">&#10094;</button>-->
+            <!-- Danh mục cuộn ngang -->
+            <div class="d-flex overflow-auto gap-3 px-2" id="categoryScroll">
+              {% for cat in category %}
+                <div class="col-6 col-md-4 col-lg-2 mb-4 flex-shrink-0 text-center">
+                  <a href="{% url 'category_detail' cat.id %}" class="category-card">
+                    <div class="category-img-wrapper">
+                      {% if cat.image %}
+                        <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+                      {% else %}
+                        <img src="{% static 'images/no-image.png' %}" alt="Không có ảnh">
+                      {% endif %}
+                      <div class="category-name">{{ cat.name }}</div>
                     </div>
-                    {% endfor %}
+                  </a>
                 </div>
-        </div>
+              {% endfor %}
+            </div>
+
+<!--            &lt;!&ndash; Mũi tên phải &ndash;&gt;-->
+<!--            <button class="arrow-btn right" onclick="scrollRight()">&#10095;</button>-->
+          </div>
+</div>
     </main>
+    <script>
+      function scrollLeft() {
+        document.getElementById('categoryScroll').scrollBy({ left: -100, behavior: 'smooth' });
+      }
+
+      function scrollRight() {
+        document.getElementById('categoryScroll').scrollBy({ left: 100, behavior: 'smooth' });
+      }
+    </script>
+
 {% endblock %}
 

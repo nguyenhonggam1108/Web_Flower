@@ -22,19 +22,24 @@ from first_app import views
 
 from first_app.views import IndexView
 
-from first_app.views import AboutView, SaleView, DesignView, ThemedView
+from first_app.views import AboutView, SaleView, DesignView
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('',IndexView.as_view(),name='index'),
+    path('orders/', include('orders.urls')),
     path('user_profile/',include('user_profile.urls')),
     path('accounts/',include('accounts.urls')),
+    path('wishlist/',include('wishlist.urls')),
     path('category/', include('category.urls')),
+    path('cart/', include('cart.urls')),
     path('product/', include('product.urls')),
     path('dropdown/',include('first_app.urls')),
     path('index/', IndexView.as_view(), name='index'),
     path('about/', AboutView.as_view(), name='about'),
     path('sale/', SaleView.as_view(), name='sale'),
     path('design/',DesignView.as_view(), name='design'),
-    path('themed/', ThemedView.as_view(), name='themed'),
     path("admin/", admin.site.urls),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <div class="container my-5">
-  <h2 class="text-center mb-4">💖 Danh Sách Yêu Thích Của Bạn</h2>
+  <h2 class="text-center mb-4">Danh Sách Yêu Thích Của Bạn</h2>
 
   {% if wishlist_items %}
     <div class="row g-4">
@@ -30,7 +30,7 @@
     </div>
   {% else %}
     <div class="text-center mt-5">
-      <p class="fs-5 text-muted">Bạn chưa có sản phẩm yêu thích nào 💔</p>
+      <p class="fs-5 text-muted">Bạn chưa có sản phẩm yêu thích nào</p>
       <a href="{% url 'index' %}" class="btn btn-success">Tiếp tục mua sắm</a>
     </div>
   {% endif %}

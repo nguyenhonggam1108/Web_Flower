@@ -18,7 +18,7 @@
 
           <!-- Ảnh sản phẩm -->
           <div class="image-wrapper">
-            <img src="{{ product.image }}" class="product-img" alt="{{ product.name }}">
+            <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
           </div>
 
           <!-- Nội dung sản phẩm -->
@@ -34,9 +34,11 @@
           <!-- Giá & nút thêm giỏ hàng -->
           <div class="card-footer bg-white d-flex justify-content-between align-items-center border-0">
               <p class="product-price">{{ product.price|floatformat:0|intcomma }} VND</p> <p>
-            <button class="btn btn-outline-success rounded-circle p-2">
-              <i class="bi bi-cart2"></i>
-            </button>
+               <button
+                  class="btn btn-outline-success rounded-circle p-2 add-to-cart-btn"
+                  data-product-id="{{ product.id }}">
+                  <i class="bi bi-cart2"></i>
+              </button>
           </div>
         </div>
       </div>

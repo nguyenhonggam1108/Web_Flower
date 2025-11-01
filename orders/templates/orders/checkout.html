@@ -1,10 +1,215 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+<title>{% block title %}Thanh toán - Bloom & Story{% endblock %}</title>
+
+<div class="container py-5">
+  <h2 class="mint-title mb-4">Thông tin thanh toán</h2>
+
+  <div class="row">
+    <!-- Cột trái: form -->
+    <div class="col-md-6 mint-border p-4">
+      <form action="{% url 'orders:checkout' %}" method="POST">
+        {% csrf_token %}
+
+        <!-- Họ và tên -->
+        <div class="mb-3">
+          <label for="full_name" class="form-label">Họ và tên</label>
+          <input
+            type="text"
+            class="form-control"
+            id="full_name"
+            name="full_name"
+            value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}"
+            required>
+        </div>
+
+        <!-- Địa chỉ khách hàng -->
+        <div class="mb-3">
+          <label for="customer_address" class="form-label">Địa chỉ khách hàng</label>
+          <textarea
+            class="form-control"
+            id="customer_address"
+            name="customer_address"
+            rows="2"
+            required>{% if user.is_authenticated and user.customer.address %}{{ user.customer.address }}{% endif %}</textarea>
+        </div>
+
+        <!-- Checkbox dùng lại địa chỉ -->
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="same_address" checked>
+          <label class="form-check-label" for="same_address">
+            Dùng lại địa chỉ khách hàng cho nhận hàng
+          </label>
+        </div>
+
+        <!-- Địa chỉ nhận hàng -->
+        <div class="mb-3">
+          <label for="shipping_address" class="form-label">Địa chỉ nhận hàng</label>
+          <textarea
+            class="form-control"
+            id="shipping_address"
+            name="shipping_address"
+            rows="2"
+            required>{% if user.is_authenticated and user.customer.address %}{{ user.customer.address }}{% endif %}</textarea>
+        </div>
+
+        <!-- Số điện thoại và Email -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">Số điện thoại</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              name="phone"
+              value="{% if user.is_authenticated and user.customer.phone %}{{ user.customer.phone }}{% endif %}"
+              required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
+          </div>
+        </div>
+
+        <!-- Ghi chú đơn hàng -->
+        <div class="mb-3">
+          <label for="note" class="form-label">Ghi chú đơn hàng (tùy chọn)</label>
+          <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+        </div>
+
+        <!-- Nút đặt hàng -->
+        <div class="d-flex gap-2 mt-3">
+          <button type="submit" class="mint-btn flex-fill" name="order_type" value="delivery">
+            Đặt hàng giao tận nơi
+          </button>
+          <button type="button" class="mint-btn flex-fill" id="pickup-btn">
+            Nhận hàng tại cửa hàng
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Cột phải: Đơn hàng -->
+    <div class="col-md-6 mint-border p-4">
+      <h4 class="mint-title mb-3">Đơn hàng của bạn</h4>
+
+      <ul class="list-group mb-3">
+        {% for item in cart_items %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            {% if item.product.image %}
+              <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                   class="me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;">
+            {% endif %}
+            <div>
+              <strong>{{ item.product.name }}</strong><br>
+              <small>x{{ item.quantity }}</small>
+            </div>
+          </div>
+          <strong>₫{{ item.total_price|floatformat:0|intcomma }}</strong>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-center text-muted">Giỏ hàng của bạn đang trống.</li>
+        {% endfor %}
+
+        {% if cart_items %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Tổng phụ</span>
+          <strong>₫{{ cart_total|floatformat:0|intcomma }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Tổng cộng</span>
+          <strong>₫{{ cart_total|floatformat:0|intcomma }}</strong>
+        </li>
+        {% endif %}
+      </ul>
+<!--        khuyến mãi -->
+        {% if user.is_authenticated %}
+          {% if available_coupons %}
+            <div class="coupon-slider mt-3">
+              <div class="coupon-track d-flex gap-3 overflow-auto py-2">
+                {% for c in available_coupons %}
+                  <div class="coupon-card border rounded p-3 text-center flex-shrink-0" style="min-width: 220px;">
+                    <h6 class="text-success fw-bold mb-1">{{ c.code }}</h6>
+                    <small class="d-block text-muted mb-1">{{ c.description }}</small>
+                    {% if c.discount_type == "PERCENT" %}
+                      <span class="badge bg-success">{{ c.discount_value }}% OFF</span>
+                    {% else %}
+                      <span class="badge bg-success">-₫{{ c.discount_value|floatformat:0|intcomma }}</span>
+                    {% endif %}
+                    {% if c.expiry_date %}
+                      <div class="text-muted small mt-1">HSD: {{ c.expiry_date|date:"d/m/Y" }}</div>
+                    {% endif %}
+                  </div>
+                {% empty %}
+                  <p class="text-muted">Hiện chưa có mã khuyến mãi nào.</p>
+                {% endfor %}
+              </div>
+            </div>
+          {% else %}
+            <p class="text-muted">Hiện chưa có mã khuyến mãi nào.</p>
+          {% endif %}
+        {% else %}
+          <input type="text" class="form-control" placeholder="Đăng ký hoặc đăng nhập để nhận được nhiều ưu đãi" disabled>
+        {% endif %}
+
+      <h5 class="mint-title mb-2">Phương thức thanh toán</h5>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="payment_method" id="bank" value="bank" checked>
+        <label class="form-check-label" for="bank">Chuyển khoản ngân hàng</label>
+      </div>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="payment_method" id="momo" value="momo">
+        <label class="form-check-label" for="momo">Ví MoMo</label>
+      </div>
+      <div class="form-check mb-4">
+        <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod">
+        <label class="form-check-label" for="cod">Nhận hàng thanh toán (COD)</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ JS -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const pickupBtn = document.getElementById("pickup-btn");
+    const form = pickupBtn.closest("form");
+    const shippingAddr = document.getElementById("shipping_address");
+    const sameAddress = document.getElementById("same_address");
+    const customerAddr = document.getElementById("customer_address");
+
+    // Khi tick "dùng lại địa chỉ"
+    sameAddress.addEventListener("change", function() {
+      if (this.checked) {
+        shippingAddr.value = customerAddr.value;
+        shippingAddr.readOnly = true;
+      } else {
+        shippingAddr.readOnly = false;
+      }
+    });
+
+    // Khi sửa địa chỉ khách hàng mà đang tick "dùng lại"
+    customerAddr.addEventListener("input", function() {
+      if (sameAddress.checked) shippingAddr.value = this.value;
+    });
+
+    // Nút nhận hàng tại cửa hàng
+    pickupBtn.addEventListener("click", function() {
+      shippingAddr.removeAttribute("required");
+      const pickupInput = document.createElement("input");
+      pickupInput.type = "hidden";
+      pickupInput.name = "order_type";
+      pickupInput.value = "pickup";
+      form.appendChild(pickupInput);
+      form.submit();
+    });
+  });
+</script>
+{% endblock %}
