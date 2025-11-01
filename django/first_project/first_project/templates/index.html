@@ -1,0 +1,48 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<!-- Thông Báo -->
+{% if messages %}
+  <div id="message-popup" class="popup-message">
+    {% for message in messages %}
+      <div class="message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% load static %}
+  <title>{% block title %}Trang Chủ{% endblock %}</title>
+    <main class="main">
+    <!-- Hero Section -->
+        <section id="hero" class="hero section">
+          <img src="{% static 'assets/img/logo_home.png' %}" alt="" data-aos="fade-in">
+          <div class="container text-center" data-aos="zoom-out" data-aos-delay="100">
+            <div class="row justify-content-center">
+              <div class="col-lg-8">
+                <a href="{% url 'about' %}" class="btn-get-started">About Me</a>
+              </div>
+            </div>
+          </div>
+        </section><!-- /Hero Section -->
+
+        <div class="container my-5">
+          <h3 class="text-center fw-bold mb-4">DANH MỤC NỔI BẬT</h3>
+          <div class="row text-center">
+            {% for cat in category %}
+              <div class="col-6 col-md-4 col-lg-2 mb-4">
+                <a href="{% url 'category_detail' cat.id %}" class="category-card">
+                  <div class="category-img-wrapper">
+                    {% if cat.image %}
+                      <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+                    {% else %}
+                      <img src="{% static 'images/no-image.png' %}" alt="Không có ảnh">
+                    {% endif %}
+                    <div class="category-name">{{ cat.name }}</div>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+    </main>
+{% endblock %}
+
