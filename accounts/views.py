@@ -52,19 +52,34 @@ class LoginView(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
+            email_or_username = form.cleaned_data['email']
             password = form.cleaned_data['password']
+
+            # ✅ Cho phép đăng nhập bằng email hoặc username
             try:
-                user_obj = User.objects.get(email=email)
+                if '@' in email_or_username:
+                    user_obj = User.objects.get(email=email_or_username)
+                else:
+                    user_obj = User.objects.get(username=email_or_username)
+            except User.DoesNotExist:
+                user_obj = None
+
+            if user_obj:
                 user = authenticate(request, username=user_obj.username, password=password)
                 if user is not None:
                     login(request, user)
-                    messages.success(request, 'Đăng Nhập Thành Công!')
-                    return redirect(reverse('index'))
+                    messages.success(request, 'Đăng nhập thành công!')
+
+                    # ✅ Chuyển hướng theo vai trò
+                    if user.is_superuser or user.is_staff:
+                        return redirect('dashboard:dashboard')
+                    else:
+                        return redirect(reverse('index'))
                 else:
                     form.add_error(None, 'Mật khẩu không đúng.')
-            except User.DoesNotExist:
-                form.add_error(None, 'Email không tồn tại.')
+            else:
+                form.add_error(None, 'Tài khoản không tồn tại.')
+
         return render(request, 'accounts/login.html', {'form': form})
 
 

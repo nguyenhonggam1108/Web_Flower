@@ -25,8 +25,6 @@ class Product(models.Model):
         choices=STATUS_CHOICES,
         default='available',
     )
-    quantity = models.PositiveIntegerField(default=0)
-
     def __str__(self):
         return self.name
 

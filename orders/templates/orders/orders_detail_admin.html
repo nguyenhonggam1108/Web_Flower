@@ -1,0 +1,111 @@
+{% extends 'dashboard/base_admin.html' %}
+{% load humanize %}
+{% block title %}Chi tiết đơn hàng #{{ order.id }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Đơn hàng #{{ order.id }}</h3>
+    <div>
+      <a href="{% url 'orders_admin:list' %}" class="btn btn-secondary me-2">← Quay về danh sách</a>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <p><strong>Khách:</strong> {{ order.full_name }}<br><small>{{ order.email }} / {{ order.phone }}</small></p>
+      <p><strong>Địa chỉ đơn hàng:</strong> {{ order.address|default:"-" }}</p>
+      {% if order.shipping_method == 'DELIVERY' %}
+        <p><strong>Địa chỉ giao:</strong> {{ order.shipping_address|default:"-" }}</p>
+      {% endif %}
+      <p><strong>Ghi chú:</strong> {{ order.note|default:'-' }}</p>
+    </div>
+
+    <div class="col-md-6">
+      <p><strong>Trạng thái:</strong> {{ order.get_status_display }}</p>
+
+      <p><strong>Giao hàng:</strong>
+        {% if order.shipping_method == 'PICKUP' %}
+          <span class="badge bg-secondary">Nhận tại cửa hàng</span>
+        {% elif order.shipping_method == 'DELIVERY' %}
+          <span class="badge bg-info text-dark">Giao tận nơi</span>
+        {% else %}
+          <span class="badge bg-light text-dark">{{ order.get_shipping_method_display }}</span>
+        {% endif %}
+      </p>
+
+      <p><strong>Thanh toán:</strong>
+        {% if order.payment_method == 'PAYPAL' %}
+          <span class="badge bg-warning text-dark">PayPal</span>
+        {% elif order.payment_method == 'COD' %}
+          <span class="badge bg-success">Thu tiền mặt (COD)</span>
+        {% else %}
+          <span class="badge bg-light text-dark">{{ order.get_payment_method_display }}</span>
+        {% endif %}
+      </p>
+
+      <p><strong>Thanh toán trạng thái:</strong>
+        {% if order.is_paid %}
+          <span class="badge bg-success">Đã trả</span>
+        {% else %}
+          <span class="badge bg-warning">Chưa trả</span>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <h5>Sản phẩm</h5>
+  <table class="table">
+    <thead><tr><th>Sản phẩm</th><th>Số lượng</th><th>Giá</th><th>Tổng</th></tr></thead>
+    <tbody>
+      {% for item in items %}
+        <tr>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.price|floatformat:0|intcomma }} VND</td>
+          <td>{{ item.get_total|floatformat:0|intcomma }} VND</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p><strong>Tổng:</strong> {{ order.final_total|floatformat:0|intcomma }} VND</p>
+
+  <hr>
+
+  <h5>Cập nhật trạng thái</h5>
+  <form method="post" action="{% url 'orders_admin:update_status' order.id %}">
+    {% csrf_token %}
+    {{ status_form.as_p }}
+    <button class="btn btn-primary">Cập nhật</button>
+  </form>
+
+<hr>
+<h5>Ảnh giao hàng</h5>
+
+{% comment %} Hiển thị tất cả ảnh liên quan tới đơn hàng {% endcomment %}
+{% for proof in order.delivery_proofs.all %}
+  <div class="mb-3">
+    <img src="{{ proof.image.url }}" width="250" class="img-thumbnail mb-1">
+    {% if proof.note %}
+      <p>{{ proof.note }}</p>
+    {% endif %}
+    <small class="text-muted">Ngày: {{ proof.delivered_at|date:"Y-m-d H:i" }}</small>
+  </div>
+{% empty %}
+  <p class="text-muted">Chưa có ảnh giao hàng</p>
+{% endfor %}
+
+<form method="post" action="{% url 'orders_admin:delivery_proof' order.id %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="id_image">Chọn ảnh (có thể chọn nhiều)</label>
+    <input type="file" name="image" id="id_image" multiple class="form-control">
+  </div>
+  <div class="mb-3">
+    <label for="id_note">Ghi chú (tùy chọn)</label>
+    <textarea name="note" id="id_note" rows="2" class="form-control"></textarea>
+  </div>
+  <button class="btn btn-success">Tải lên ảnh giao hàng</button>
+</form>
+</div>
+{% endblock %}

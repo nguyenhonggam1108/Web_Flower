@@ -1,0 +1,203 @@
+{% extends 'dashboard/base_admin.html' %}
+{% load static %}
+{% block title %}Tạo phiếu nhập{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h3>📥 Tạo phiếu nhập</h3>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      {{ form.supplier.label_tag }}{{ form.supplier }}
+    </div>
+    <div class="mb-3">
+      {{ form.invoice_file.label_tag }}{{ form.invoice_file }}
+    </div>
+    <div class="mb-3">
+      {{ form.note.label_tag }}{{ form.note }}
+    </div>
+
+    <h5>Dòng nhập</h5>
+    <table class="table" id="items-table">
+      <thead><tr><th>Nguồn</th><th>Danh mục</th><th>Vật phẩm</th><th>Số</th><th>Đơn giá</th><th></th></tr></thead>
+      <tbody>
+        {{ formset.management_form }}
+        {% for form in formset %}
+          <tr class="form-row">
+            <td>
+              <select name="{{ form.prefix }}-item_app" class="form-select item-app">
+                <option value="inventory">Hoa</option>
+                <option value="accessories">Phụ kiện</option>
+              </select>
+            </td>
+            <td>
+              <select class="form-select category-select" data-prefix="{{ form.prefix }}">
+                <option value="">-- Chọn danh mục --</option>
+                <!-- categories loaded by JS -->
+              </select>
+            </td>
+            <td>
+              <select name="{{ form.prefix }}-item_id" class="form-select item-select">
+                <option value="">-- Chọn vật phẩm --</option>
+              </select>
+              <input type="hidden" name="{{ form.prefix }}-item_model" class="item-model" />
+            </td>
+            <td>{{ form.quantity_bunch }}</td>
+            <td>{{ form.unit_price }}</td>
+            <td>
+              {% if form.instance.pk %}
+                <input type="checkbox" name="{{ form.prefix }}-DELETE"> Xóa
+              {% else %}
+                <button type="button" class="btn btn-sm btn-danger remove-row">Xóa</button>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        <tr id="empty-form-row" style="display:none;">
+          {{ formset.empty_form }}
+        </tr>
+      </tbody>
+    </table>
+
+    <button type="button" id="add-row" class="btn btn-secondary mb-3">Thêm dòng</button>
+    <br>
+    <button class="btn btn-primary">Lưu phiếu nhập</button>
+    <a href="{% url 'inventory:receipts_list' %}" class="btn btn-secondary">Hủy</a>
+  </form>
+</div>
+
+<script>
+/* JS high-level:
+ - load category lists for inventory and accessories via APIs
+ - when user selects category, call /inventory/api/items-by-category/<app>/<cat_id> to populate item-select
+ - set hidden input item_model accordingly (lowercase model name expected by ContentType)
+ - clone rows using empty_form, ensure management form updated
+*/
+document.addEventListener('DOMContentLoaded', function(){
+  const addBtn = document.getElementById('add-row');
+  const tbody = document.querySelector('#items-table tbody');
+  const totalFormsInput = document.querySelector('input[name="{{ formset.prefix }}-TOTAL_FORMS"]');
+  const emptyRow = document.getElementById('empty-form-row');
+
+  // caches for categories
+  let flowerCategories = []; // optionally fill from server
+  let accessoryCategories = [];
+
+  // helper to fetch categories
+  async function fetchCategories(){
+    try {
+      // fetch flower categories (inventory)
+      const resp1 = await fetch('/inventory/api/categories/');
+      if(resp1.ok) flowerCategories = await resp1.json();
+      // fetch accessory categories (accessories app)
+      const resp2 = await fetch('/accessories/api/categories/');
+      if(resp2.ok) accessoryCategories = await resp2.json();
+    } catch(e){
+      console.warn('Cannot fetch categories', e);
+    }
+  }
+
+  // populate category-select element with options depending on chosen app
+  function populateCategorySelect(selectEl, app){
+    selectEl.innerHTML = '<option value="">-- Chọn danh mục --</option>';
+    const list = app === 'accessories' ? accessoryCategories : flowerCategories;
+    list.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      selectEl.appendChild(opt);
+    });
+  }
+
+  // populate items for a given app and category into itemSelect
+  async function loadItemsInto(selectEl, app, categoryId, modelNameField){
+    selectEl.innerHTML = '<option value="">Đang tải...</option>';
+    try {
+      const resp = await fetch(`/inventory/api/items-by-category/${app}/${categoryId}/`);
+      if(!resp.ok){ selectEl.innerHTML = '<option value="">Không tải được</option>'; return; }
+      const data = await resp.json();
+      selectEl.innerHTML = '<option value="">-- Chọn vật phẩm --</option>';
+      data.forEach(it => {
+        const opt = document.createElement('option');
+        opt.value = it.id;
+        opt.textContent = `${it.name} (T:${it.stock ?? '-'}) - ${it.price}`;
+        // set model name for this app: FlowerItem for inventory, AccessoryItem for accessories
+        // we store model name in sibling hidden field
+        selectEl.appendChild(opt);
+      });
+      // set the model name field accordingly
+      if(modelNameField){
+        modelNameField.value = (app === 'accessories') ? 'AccessoryItem' : 'FlowerItem';
+      }
+    } catch(err){
+      selectEl.innerHTML = '<option value="">Lỗi</option>';
+    }
+  }
+
+  // initial fetch categories
+  fetchCategories();
+
+  // when user changes category in any row
+  tbody.addEventListener('change', function(e){
+    const target = e.target;
+    if(target.classList.contains('category-select')){
+      const prefix = target.dataset.prefix;
+      const row = target.closest('tr');
+      const appSel = row.querySelector('.item-app');
+      const itemSel = row.querySelector('.item-select');
+      const modelField = row.querySelector('.item-model');
+      const app = appSel ? appSel.value : 'inventory';
+      const catId = target.value;
+      if(!catId){
+        itemSel.innerHTML = '<option value="">-- Chọn vật phẩm --</option>';
+        return;
+      }
+      loadItemsInto(itemSel, app, catId, modelField);
+    }
+
+    if(target.classList.contains('item-app')){
+      // when app changed, repopulate categories for this row
+      const row = target.closest('tr');
+      const catSel = row.querySelector('.category-select');
+      populateCategorySelect(catSel, target.value);
+      row.querySelector('.item-select').innerHTML = '<option value="">-- Chọn vật phẩm --</option>';
+      row.querySelector('.item-model').value = ''; // reset model
+    }
+  });
+
+  // add-row logic using empty_form but must include hidden inputs for item_app/model/id naming
+  addBtn.addEventListener('click', function(){
+    let formCount = parseInt(totalFormsInput.value);
+    const newRowHtml = emptyRow.innerHTML.replace(/__prefix__/g, formCount);
+    const temp = document.createElement('tbody');
+    temp.innerHTML = newRowHtml;
+    const newRow = temp.querySelector('tr');
+    newRow.classList.add('form-row');
+
+    // insert default selects: ensure item_app exists and category-select has dataset prefix
+    const prefix = '{{ formset.prefix }}-' + formCount;
+    // set name attributes for item_app/item_model/item_id on newRow
+    const itemAppSel = newRow.querySelector('.item-app');
+    if(itemAppSel) itemAppSel.name = prefix + '-item_app';
+    const itemModelInput = newRow.querySelector('.item-model');
+    if(itemModelInput) itemModelInput.name = prefix + '-item_model';
+    const itemIdSel = newRow.querySelector('.item-select');
+    if(itemIdSel) itemIdSel.name = prefix + '-item_id';
+    const catSel = newRow.querySelector('.category-select');
+    if(catSel) catSel.dataset.prefix = prefix;
+
+    tbody.appendChild(newRow);
+    totalFormsInput.value = formCount + 1;
+  });
+
+  // delegate remove
+  tbody.addEventListener('click', function(e){
+    if(e.target && e.target.classList.contains('remove-row')){
+      const row = e.target.closest('tr');
+      row.remove();
+      totalFormsInput.value = parseInt(totalFormsInput.value) - 1;
+    }
+  });
+
+});
+</script>
+{% endblock %}

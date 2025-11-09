@@ -6,11 +6,11 @@
 <div class="container py-5">
   <h2 class="mint-title mb-4">Thông tin thanh toán</h2>
 
-  <div class="row">
-    <!-- Cột trái: form -->
-    <div class="col-md-6 mint-border p-4">
-      <form action="{% url 'orders:checkout' %}" method="POST">
-        {% csrf_token %}
+  <form action="{% url 'orders:checkout' %}" method="POST">
+    {% csrf_token %}
+    <div class="row">
+      <!-- Cột trái: Thông tin khách hàng -->
+      <div class="col-md-6 mint-border p-4">
 
         <!-- Họ và tên -->
         <div class="mb-3">
@@ -83,53 +83,48 @@
           <textarea class="form-control" id="note" name="note" rows="3"></textarea>
         </div>
 
-        <!-- Nút đặt hàng -->
-        <div class="d-flex gap-2 mt-3">
-          <button type="submit" class="mint-btn flex-fill" name="order_type" value="delivery">
-            Đặt hàng giao tận nơi
-          </button>
-          <button type="button" class="mint-btn flex-fill" id="pickup-btn">
-            Nhận hàng tại cửa hàng
-          </button>
-        </div>
-      </form>
-    </div>
+      </div>
 
-    <!-- Cột phải: Đơn hàng -->
-    <div class="col-md-6 mint-border p-4">
-      <h4 class="mint-title mb-3">Đơn hàng của bạn</h4>
+      <!-- Cột phải: Đơn hàng -->
+      <div class="col-md-6 mint-border p-4">
+        <h4 class="mint-title mb-3">Đơn hàng của bạn</h4>
 
-      <ul class="list-group mb-3">
-        {% for item in cart_items %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            {% if item.product.image %}
-              <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
-                   class="me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;">
-            {% endif %}
-            <div>
-              <strong>{{ item.product.name }}</strong><br>
-              <small>x{{ item.quantity }}</small>
+        <ul class="list-group mb-3">
+          {% for item in cart_items %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                     class="me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;">
+              {% endif %}
+              <div>
+                <strong>{{ item.product.name }}</strong><br>
+                <small>x{{ item.quantity }}</small>
+              </div>
             </div>
-          </div>
-          <strong>₫{{ item.total_price|floatformat:0|intcomma }}</strong>
-        </li>
-        {% empty %}
-        <li class="list-group-item text-center text-muted">Giỏ hàng của bạn đang trống.</li>
-        {% endfor %}
+            <strong>₫{{ item.total_price|floatformat:0|intcomma }}</strong>
+          </li>
+          {% empty %}
+          <li class="list-group-item text-center text-muted">Giỏ hàng của bạn đang trống.</li>
+          {% endfor %}
 
-        {% if cart_items %}
-        <li class="list-group-item d-flex justify-content-between">
-          <span>Tổng phụ</span>
-          <strong>₫{{ cart_total|floatformat:0|intcomma }}</strong>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span>Tổng cộng</span>
-          <strong>₫{{ cart_total|floatformat:0|intcomma }}</strong>
-        </li>
-        {% endif %}
-      </ul>
-<!--        khuyến mãi -->
+          {% if cart_items %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Tổng phụ</span>
+            <strong id="subtotal">₫{{ cart_total|floatformat:0|intcomma }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between text-success" id="discount-row" style="display:none;">
+            <span>Giảm giá</span>
+            <strong id="discount-amount">-₫0</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Tổng cộng</span>
+            <strong id="final-total">₫{{ cart_total|floatformat:0|intcomma }}</strong>
+          </li>
+          {% endif %}
+        </ul>
+
+        <!-- Khuyến mãi -->
         {% if user.is_authenticated %}
           {% if available_coupons %}
             <div class="coupon-slider mt-3">
@@ -147,8 +142,6 @@
                       <div class="text-muted small mt-1">HSD: {{ c.expiry_date|date:"d/m/Y" }}</div>
                     {% endif %}
                   </div>
-                {% empty %}
-                  <p class="text-muted">Hiện chưa có mã khuyến mãi nào.</p>
                 {% endfor %}
               </div>
             </div>
@@ -159,57 +152,35 @@
           <input type="text" class="form-control" placeholder="Đăng ký hoặc đăng nhập để nhận được nhiều ưu đãi" disabled>
         {% endif %}
 
-      <h5 class="mint-title mb-2">Phương thức thanh toán</h5>
-      <div class="form-check mb-2">
-        <input class="form-check-input" type="radio" name="payment_method" id="bank" value="bank" checked>
-        <label class="form-check-label" for="bank">Chuyển khoản ngân hàng</label>
-      </div>
-      <div class="form-check mb-2">
-        <input class="form-check-input" type="radio" name="payment_method" id="momo" value="momo">
-        <label class="form-check-label" for="momo">Ví MoMo</label>
-      </div>
-      <div class="form-check mb-4">
-        <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod">
-        <label class="form-check-label" for="cod">Nhận hàng thanh toán (COD)</label>
+        <!-- Phương thức thanh toán -->
+        <h5 class="mint-title mb-2 mt-4">Phương thức thanh toán</h5>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
+          <label class="form-check-label" for="paypal">Thanh toán qua PayPal (Thẻ)</label>
+        </div>
+
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="payment_method" id="qr" value="qr">
+          <label class="form-check-label" for="qr">Quét mã QR thanh toán</label>
+        </div>
+
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod">
+          <label class="form-check-label" for="cod">Nhận hàng thanh toán (COD)</label>
+        </div>
+
+        <!-- Nút submit -->
+        <div class="d-flex gap-2 mt-3">
+          <button type="submit" class="mint-btn flex-fill" name="order_type" value="delivery">
+            Đặt hàng giao tận nơi
+          </button>
+          <button type="submit" id="pickup-btn" class="mint-btn flex-fill" name="order_type" value="pickup">
+              Nhận hàng tại cửa hàng
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
 </div>
 
-<!-- ✅ JS -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const pickupBtn = document.getElementById("pickup-btn");
-    const form = pickupBtn.closest("form");
-    const shippingAddr = document.getElementById("shipping_address");
-    const sameAddress = document.getElementById("same_address");
-    const customerAddr = document.getElementById("customer_address");
-
-    // Khi tick "dùng lại địa chỉ"
-    sameAddress.addEventListener("change", function() {
-      if (this.checked) {
-        shippingAddr.value = customerAddr.value;
-        shippingAddr.readOnly = true;
-      } else {
-        shippingAddr.readOnly = false;
-      }
-    });
-
-    // Khi sửa địa chỉ khách hàng mà đang tick "dùng lại"
-    customerAddr.addEventListener("input", function() {
-      if (sameAddress.checked) shippingAddr.value = this.value;
-    });
-
-    // Nút nhận hàng tại cửa hàng
-    pickupBtn.addEventListener("click", function() {
-      shippingAddr.removeAttribute("required");
-      const pickupInput = document.createElement("input");
-      pickupInput.type = "hidden";
-      pickupInput.name = "order_type";
-      pickupInput.value = "pickup";
-      form.appendChild(pickupInput);
-      form.submit();
-    });
-  });
-</script>
 {% endblock %}

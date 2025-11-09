@@ -47,19 +47,139 @@ body {
   background-color: #3d9970;
   color: white;
 }
+/* ===== Coupon Card ===== */
+.coupon-card {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fff;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 12px;
+}
+
+.coupon-card:hover {
+  background: rgba(0, 0, 0, 0.03);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Overlay "Chọn" button ===== */
+.coupon-card::before {
+  content: "Chọn";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Hover effect */
+.coupon-card:hover::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Làm mờ nhẹ khi hover */
+.coupon-card:hover {
+  filter: brightness(0.95);
+}
+
+/* ===== Khi đã chọn ===== */
+.coupon-card.selected {
+  border-color: #36c1a3; /* Màu xanh mint */
+  box-shadow: 0 0 10px rgba(54, 193, 163, 0.5);
+}
+
+.coupon-card.selected::before {
+  content: "Đã chọn";
+  background: rgba(54, 193, 163, 0.9);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Badge & text animation */
+.coupon-card * {
+  transition: all 0.3s ease;
+}
+
+/* ===== Thanh trượt coupon ===== */
+.coupon-slider {
+  margin-top: 1rem;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.coupon-track {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
 
 .coupon-track::-webkit-scrollbar {
   height: 6px;
 }
 .coupon-track::-webkit-scrollbar-thumb {
-  background-color: #9cd6c4;
-  border-radius: 10px;
+  background: #ccc;
+  border-radius: 3px;
 }
-.coupon-card {
-  background-color: #f8fffa;
-  transition: all 0.2s ease;
+
+/* ===== Bloom & Story - Payment Page ===== */
+body {
+  background: #f8fcf9;
 }
-.coupon-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+/* Card chính */
+.card {
+  background: #ffffffcc;
+  border-radius: 1.5rem;
+}
+
+/* Tiêu đề */
+.card-body h2 {
+  color: #198754;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+
+/* Khung tóm tắt đơn hàng */
+.border.rounded-3.bg-light {
+  background-color: #f1f8f3 !important;
+}
+
+.border.rounded-3 h5 {
+  color: #146c43;
+}
+
+.border.rounded-3 strong {
+  color: #0a3622;
+}
+
+/* Nút quay lại */
+.btn-outline-secondary {
+  border-color: #198754;
+  color: #198754;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #198754;
+  color: white;
+}
+
+/* Nút PayPal */
+.btn-primary {
+  background-color: #0070ba;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #005c99;
 }

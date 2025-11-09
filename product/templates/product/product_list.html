@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Danh sách sản phẩm{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">Danh sách sản phẩm</h2>
+
+  <div class="row">
+    {% for product in products %}
+      <div class="col-md-3 mb-4">
+        <div class="card h-100">
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text text-danger">{{ product.price }} VNĐ</p>
+            <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">Xem chi tiết</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center">Hiện chưa có sản phẩm nào.</p>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ Phân trang -->
+  <div class="pagination justify-content-center">
+    {% if is_paginated %}
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-secondary">« Trước</a>
+      {% endif %}
+      <span class="mx-2">Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-secondary">Sau »</a>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

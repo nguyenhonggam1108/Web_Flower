@@ -1,0 +1,39 @@
+{% extends 'dashboard/base_admin.html' %}
+{% block title %}Quản lý kho{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>📦 Danh sách nhập / xuất hàng</h2>
+  <a href="{% url 'inventory:add' %}" class="btn btn-primary mb-3">+ Thêm phiếu</a>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Sản phẩm</th>
+        <th>Loại</th>
+        <th>Số lượng (bó)</th>
+        <th>Nhân viên</th>
+        <th>Ngày</th>
+        <th>Ghi chú</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in inventory %}
+        {% if i.type == 'EXPORT' %}
+          <tr class="table-danger">
+        {% else %}
+          <tr class="table-success">
+        {% endif %}
+            <td>{{ i.product.name }}</td>
+            <td>{{ i.get_type_display }}</td>
+            <td>{{ i.quantity }}</td>
+            <td>{{ i.staff.username }}</td>
+            <td>{{ i.date|date:"d/m/Y H:i" }}</td>
+            <td>{{ i.note }}</td>
+          </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-center">Chưa có dữ liệu</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

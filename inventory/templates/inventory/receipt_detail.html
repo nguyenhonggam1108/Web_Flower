@@ -1,0 +1,33 @@
+{% extends 'dashboard/base_admin.html' %}
+{% load humanize %}
+{% block title %}Chi tiết phiếu nhập #{{ receipt.id }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <a href="{% url 'inventory:receipts_list' %}" class="btn btn-secondary mb-3">← Quay về</a>
+  <h3>Phiếu nhập #{{ receipt.id }}</h3>
+  <p>Nhà cung cấp: {{ receipt.supplier.name }}</p>
+  <p>Người tạo: {{ receipt.created_by }}</p>
+  <p>Ngày: {{ receipt.created_at|date:"Y-m-d H:i" }}</p>
+  <p>Ghi chú: {{ receipt.note|default:"-" }}</p>
+  {% if receipt.invoice_file %}
+    <p>Hóa đơn: <a href="{{ receipt.invoice_file.url }}">Tải về</a></p>
+  {% endif %}
+
+  <h5>Sản phẩm</h5>
+  <table class="table">
+    <thead><tr><th>Hoa</th><th>Số bó</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
+    <tbody>
+      {% for item in receipt.items.all %}
+        <tr>
+          <td>{{ item.flower.name }}</td>
+          <td>{{ item.quantity_bunch }}</td>
+          <td>{{ item.unit_price|floatformat:0 }}</td>
+          <td>{{ item.total_price|floatformat:0 }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p><strong>Tổng:</strong> {{ receipt.total_amount|floatformat:0 }}</p>
+</div>
+{% endblock %}

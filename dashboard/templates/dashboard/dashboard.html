@@ -1,0 +1,80 @@
+{% extends 'dashboard/base_admin.html' %}
+{% block title %}Trang quản trị{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>🌼 Thống kê tổng quan</h2>
+
+  {% if user.is_superuser %}
+  <li class="nav-item">
+    <a class="nav-link text-warning" href="/admin/">
+      <i class="bi bi-gear"></i>Quản Trị Hệ Thống
+    </a>
+  </li>
+{% endif %}
+
+  {% if low_stock_items %}
+  <div class="alert alert-danger mt-3">
+    <strong>⚠ Cảnh báo:</strong> Một số hoa sắp hết hàng!
+    <ul>
+      {% for item in low_stock_items %}
+        <li>{{ item.flower.name }}: còn {{ item.stock }} bó</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- ✅ DANH SÁCH CHỨC NĂNG CHÍNH -->
+  <div class="list-group mt-4 shadow-sm">
+<!--      <a href="{% url 'inventory:manage_categories' %}" class="list-group-item list-group-item-action">📂 Quản lý toàn bộ danh mục</a>-->
+    <a href="/admin/products/" class="list-group-item list-group-item-action">📦 Quản lý sản phẩm</a>
+    <a href="/admin/orders/" class="list-group-item list-group-item-action">🧾 Quản lý đơn hàng</a>
+    <a href="/inventory/import/" class="list-group-item list-group-item-action">📥 Nhập / Xuất Nguyên Liệu</a>
+    <a href="/inventory/report/" class="list-group-item list-group-item-action">📊 Thống kê kho</a>
+  </div>
+
+<!--Biểu đồ -->
+<hr class="mt-5">
+<h4 class="mt-4 mb-3">📈 Thống kê nhập – xuất theo ngày</h4>
+<canvas id="inventoryChart" height="100"></canvas>
+
+<!-- Nạp thư viện Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('inventoryChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ labels|safe }},
+      datasets: [
+        {
+          label: 'Nhập hàng',
+          data: {{ import_data|safe }},
+          backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        },
+        {
+          label: 'Xuất hàng',
+          data: {{ export_data|safe }},
+          backgroundColor: 'rgba(255, 99, 132, 0.6)'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { title: { display: true, text: 'Ngày' } },
+        y: { title: { display: true, text: 'Số lượng (bó)' }, beginAtZero: true }
+      },
+      plugins: {
+        legend: { position: 'top' },
+        title: {
+          display: true,
+          text: 'Biểu đồ thống kê nhập – xuất kho'
+        }
+      }
+    }
+  });
+</script>
+</div>
+{% endblock %}

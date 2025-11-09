@@ -1,0 +1,64 @@
+{% extends 'dashboard/base_admin.html' %}
+{% block title %}Thêm / Sửa sản phẩm{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>{% if product %}✏ Sửa sản phẩm{% else %}➕ Thêm sản phẩm{% endif %}</h3>
+    <div>
+      <a href="{% url 'product_admin:list' %}" class="btn btn-secondary me-2">← Quay về danh sách</a>
+    </div>
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label>Tên sản phẩm:</label>
+      <input type="text" name="name" value="{{ product.name|default:'' }}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label>Giá:</label>
+      <input type="number" name="price" value="{{ product.price|default:'' }}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label>Danh mục:</label>
+      <select name="category" class="form-select">
+        <option value="">-- Chọn danh mục --</option>
+        {% for c in categories %}
+          {% if product and product.category and product.category.id == c.id %}
+            <option value="{{ c.id }}" selected>{{ c.name }}</option>
+          {% else %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label>Trạng thái:</label>
+      <select name="status" class="form-select">
+          {% if product and product.status == 'available' %}
+            <option value="available" selected>Còn hàng</option>
+            <option value="out_of_stock">Hết hàng</option>
+          {% elif product and product.status == 'out_of_stock' %}
+            <option value="available">Còn hàng</option>
+            <option value="out_of_stock" selected>Hết hàng</option>
+          {% else %}
+            <option value="available">Còn hàng</option>
+            <option value="out_of_stock">Hết hàng</option>
+          {% endif %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label>Hình ảnh:</label>
+      {% if product and product.image %}
+        <img src="{{ product.image.url }}" width="100" class="mb-2"><br>
+      {% endif %}
+      <input type="file" name="image" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label>Mô tả:</label>
+      <textarea name="description" class="form-control">{{ product.description|default:'' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a href="{% url 'product_admin:list' %}" class="btn btn-secondary">Hủy</a>
+  </form>
+</div>
+{% endblock %}

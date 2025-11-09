@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+  <div class="text-center">
+    <h3>Quét mã QR để thanh toán</h3>
+    <p>Đơn hàng #<strong>{{ order.id }}</strong> — <strong>{{ vnd_amount|floatformat:0 }} VND (~{{ usd_amount }} USD)</strong></p>
+
+    <div class="my-4">
+      <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code" style="width:280px;height:280px;">
+    </div>
+
+    <p class="text-muted">
+      Quét QR bằng trình duyệt hoặc app PayPal sandbox để thanh toán.<br>
+      Hoặc <a href="{{ paypal_link }}" target="_blank">click vào đây để thanh toán trực tiếp</a>.
+    </p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success">Tôi đã thanh toán</button>
+      <a href="{% url 'orders:checkout' %}" class="btn btn-secondary ms-2">Quay lại</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

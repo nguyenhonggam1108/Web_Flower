@@ -1,0 +1,95 @@
+{% extends 'dashboard/base_admin.html' %}
+{% load humanize %}
+{% block title %}Quản lý đơn hàng{% endblock %}
+{% block content %}
+<div class="container mt-4">
+     <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>🧾 Quản lý đơn hàng</h2>
+        <div>
+          <a href="{% url 'dashboard:dashboard' %}" class="btn btn-secondary me-2">← Quay về Dashboard</a>
+        </div>
+    </div>
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+      <input type="text" name="q" class="form-control" placeholder="Tìm theo tên / email / phone / id" value="{{ q }}">
+    </div>
+    <div class="col-md-3">
+      <select name="status" class="form-select">
+        <option value="">-- Tất cả trạng thái --</option>
+        {% for val, label in status_choices %}
+          <option value="{{ val }}" {% if selected_status == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary">Lọc</button>
+    </div>
+  </form>
+
+  <table class="table table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Khách</th>
+        <th>Giao hàng</th>
+        <th>Thanh toán</th>
+        <th>Tổng</th>
+        <th>Trạng thái</th>
+        <th>Ngày</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.full_name }}<br><small>{{ order.email }} / {{ order.phone }}</small></td>
+
+        <td>
+          {% if order.shipping_method == 'PICKUP' %}
+            <span class="badge bg-secondary">Nhận tại cửa hàng</span>
+          {% elif order.shipping_method == 'DELIVERY' %}
+            <span class="badge bg-info text-dark">Giao tận nơi</span>
+          {% else %}
+            <span class="badge bg-light text-dark">{{ order.get_shipping_method_display }}</span>
+          {% endif %}
+        </td>
+
+        <td>
+          {% if order.payment_method == 'PAYPAL' %}
+            <span class="badge bg-warning text-dark">PayPal</span>
+          {% elif order.payment_method == 'COD' %}
+            <span class="badge bg-success">Thu tiền mặt</span>
+          {% else %}
+            <span class="badge bg-light text-dark">{{ order.get_payment_method_display }}</span>
+          {% endif %}
+        </td>
+
+        <td>{{ order.final_total|floatformat:0|intcomma }} VND</td>
+        <td>{{ order.get_status_display }}</td>
+        <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+        <td>
+          <a href="{% url 'orders_admin:detail' order.id %}" class="btn btn-sm btn-info">Chi tiết</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="text-center">Không có đơn hàng</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if is_paginated %}
+    <nav>
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Trước</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Sau</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}

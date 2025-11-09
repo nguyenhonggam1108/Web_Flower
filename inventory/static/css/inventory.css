@@ -1,0 +1,41 @@
+/* inventory.css — styles for inventory form */
+
+.inv-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(12, 24, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+}
+.inv-row-label { font-weight: 600; color: #333; font-size: 0.95rem; }
+.inv-muted { color: #6b7280; font-size: 0.875rem; }
+.form-text-small { font-size: 0.82rem; color: #6c757d; margin-top: 6px; }
+
+/* Inputs tuned */
+.form-control, .form-select {
+  border-radius: 8px;
+  height: 42px;
+  padding: 0.5rem 0.75rem;
+}
+
+/* action buttons */
+.btn-primary {
+  border-radius: 8px;
+  padding: 8px 18px;
+  box-shadow: 0 4px 10px rgba(13,110,253,0.08);
+}
+.btn-outline-secondary {
+  border-radius: 8px;
+}
+
+/* stock badge */
+.stock-badge { font-weight:700; font-size:0.95rem; }
+
+/* small layout tweaks */
+.inv-card .row + hr { margin-top: 1rem; margin-bottom: 1rem; border-color: rgba(0,0,0,0.06); }
+
+/* responsive adjustments */
+@media (max-width: 768px) {
+  .inv-card { padding: 14px; }
+  .form-control, .form-select { height: 40px; }
+}

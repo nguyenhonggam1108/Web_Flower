@@ -12,14 +12,44 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+
+# Tỷ giá VND -> USD
+VND_TO_USD_RATE = 24000
+
+# Bật sandbox khi test
+PAYPAL_USE_SANDBOX = True
+
+# Tài khoản nhận tiền sandbox
+PAYPAL_RECEIVER_EMAIL = 'sb-qhstd47302949@business.example.com'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = os.path.join(BASE_DIR,'first_project', 'templates')
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'first_project', 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# =============================
+# CẤU HÌNH GỬI EMAIL THẬT (GMAIL)
+# # =============================
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'no-reply@bloomandstory.test'
+# 👉 Email gửi đi (shop)
+EMAIL_HOST_USER = 'bloomandstory@gmail.com'
+
+# 👉 App password 16 ký tự của Gmail (KHÔNG phải mật khẩu Gmail thật)
+EMAIL_HOST_PASSWORD = 'gydb jzbu wwkq hsfx'  # Thay bằng App Password thật của bạn
+
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 # Quick-start development settings - unsuitable for production
@@ -41,14 +71,18 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    'paypal.standard.ipn',
     "first_app",
     "accounts",
     "category",
+    "dashboard",
+    "inventory",
     "product",
     "user_profile",
     "wishlist",
     "cart",
     "orders",
+    'accessories',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +108,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 'cart.context_processors.cart_total_quantity',
-
             ],
         },
     },

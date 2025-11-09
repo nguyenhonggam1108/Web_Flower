@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<title>Thanh toán qua PayPal - Bloom & Story</title>
+
+<!-- Link tới CSS -->
+<link rel="stylesheet" href="{% static 'css/payment.css' %}">
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body text-center p-5">
+
+          <h2 class="fw-bold mb-4 text-success">
+            <i class="bi bi-paypal"></i> Thanh toán qua PayPal
+          </h2>
+
+          <p class="text-muted mb-1">Cảm ơn bạn đã chọn Bloom & Story 💐</p>
+          <p class="text-muted mb-4">Vui lòng xác nhận thanh toán để hoàn tất đơn hàng của bạn.</p>
+
+          <div class="border rounded-3 p-3 mb-4 bg-light text-start">
+            <h5 class="fw-semibold mb-3">Tóm tắt đơn hàng</h5>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Tổng tiền:</span>
+              <strong>{{ total_vnd|floatformat:0 }} VND</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Thành tiền quy đổi:</span>
+              <strong>{{ usd_amount }} USD</strong>
+            </div>
+          </div>
+
+          <!-- ✅ Form PayPal thủ công -->
+          <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" class="d-inline-block">
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary btn-lg px-4 py-2">
+              <i class="bi bi-paypal"></i> Thanh toán qua PayPal
+            </button>
+          </form>
+
+          <hr class="my-4">
+
+          <div class="text-muted small">
+            <p>Bạn sẽ được chuyển đến trang PayPal để hoàn tất thanh toán an toàn.</p>
+            <p>Sau khi hoàn tất, hệ thống sẽ tự động quay lại trang Bloom & Story.</p>
+          </div>
+
+          <a href="{% url 'orders:checkout' %}" class="btn btn-outline-secondary mt-3">
+            ← Quay lại giỏ hàng
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
